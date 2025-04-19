@@ -1,38 +1,45 @@
-import React, { useState, useEffect } from "react";
-import { Route, Routes, Navigate } from "react-router-dom";
-import Signup from "./pages/Signup";
-import SignIn from "./pages/SignIn";
-import Home from "./pages/home";
+import React from "react";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Index from "./pages/Index";
+import Courses from "./pages/Courses";
+import About from "./pages/About";
+import Gallery from "./pages/Gallery";
+import Games from "./pages/Games";
+import Contact from "./pages/Contact";
+import LoginIndex from "./pages/auth/loginIndex";
+import NotFound from "./pages/NotFound";
+import Login from "./pages/auth/pages/Login";
+import Signup from "./pages/auth/pages/Signup";
 
-const getTokenFromCookie = () => {
-  const match = document.cookie.match(new RegExp('(^| )token=([^;]+)'));
-  return match ? match[2] : null;
-};
+const queryClient = new QueryClient();
 
-function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+const App = () => (
+  <QueryClientProvider client={queryClient}>
+    <TooltipProvider>
+      <BrowserRouter>
+        <Routes>
+          {/* Main application routes */}
+          <Route path="/" element={<Index />} />
+          <Route path="/courses" element={<Courses />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/gallery" element={<Gallery />} />
+          <Route path="/games" element={<Games />} />
+          <Route path="/contact" element={<Contact />} />
 
-  useEffect(() => {
-    const token = getTokenFromCookie();
-    setIsAuthenticated(!!token);
-  }, []);
+          {/* Authentication routes */}
+          <Route path="/auth" element={<LoginIndex />}>
+            <Route path="login" element={<Login />} />
+            <Route path="signup" element={<Signup />} />
+          </Route>
 
-  return (
-    <Routes>
-      <Route
-        path="/signup"
-        element={isAuthenticated ? <Navigate to="/" /> : <Signup setAuth={setIsAuthenticated} />}
-      />
-      <Route
-        path="/signin"
-        element={isAuthenticated ? <Navigate to="/" /> : <SignIn setAuth={setIsAuthenticated} />}
-      />
-      <Route
-        path="/"
-        element={isAuthenticated ? <Home /> : <Navigate to="/signin" />}
-      />
-    </Routes>
-  );
-}
+          {/* 404 route */}
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </BrowserRouter>
+    </TooltipProvider>
+  </QueryClientProvider>
+);
 
 export default App;

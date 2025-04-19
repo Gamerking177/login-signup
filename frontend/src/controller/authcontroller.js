@@ -11,11 +11,13 @@ const AuthController = {
         credentials: "include",
         body: JSON.stringify({ name, email, password }),
       });
-
+  
+      const data = await res.json(); // 👈 move outside if-else
+  
       if (res.ok) {
+        console.log("Signup successful:", data);
         return { success: true };
       } else {
-        const data = await res.json();
         console.error("Signup error:", data.detail);
         return { success: false, message: data.detail };
       }
@@ -24,6 +26,7 @@ const AuthController = {
       return { success: false };
     }
   },
+  
 
   async signIn(email, password) {
     try {
@@ -40,6 +43,7 @@ const AuthController = {
         const data = await res.json();
         // Save token in cookie or localStorage
         document.cookie = `token=${data.token}; path=/`;
+        window.location.href = "/"; // Redirect to home page on successful login
         return { success: true };
       } else {
         const data = await res.json();
